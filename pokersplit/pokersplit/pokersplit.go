@@ -7,10 +7,11 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
 
 	"github.com/fhchstr/pokersplit/pokersplit/players"
+	"golang.org/x/text/collate"
+	"golang.org/x/text/language"
 )
 
 //go:embed index.tmpl
@@ -30,17 +31,30 @@ var (
 			}
 			return ret
 		},
-		// SortedPlayers returns the Players, sorted by name.
-		"Sorted": func(p players.Players) players.Players {
-			ret := make(players.Players, len(p))
-			copy(ret, p)
-			sort.SliceStable(ret, func(i, j int) bool {
-				return strings.ToLower(ret[i].Name) < strings.ToLower(ret[j].Name)
-			})
-			return ret
-		},
+		"Sorted": sorted,
 	}).Parse(index))
 )
+
+// sorted returns the Players sorted by name, ignoring case and accents.
+func sorted(p players.Players) players.Players {
+	playersByName := make(map[string]*players.Player)
+	for _, player := range p {
+		playersByName[player.Name] = player
+	}
+
+	var playerNames []string
+	for name := range playersByName {
+		playerNames = append(playerNames, name)
+	}
+	cl := collate.New(language.English, collate.IgnoreCase, collate.IgnoreDiacritics)
+	cl.SortStrings(playerNames)
+
+	ret := make(players.Players, len(p))
+	for i, name := range playerNames {
+		ret[i] = playersByName[name]
+	}
+	return ret
+}
 
 type tmplData struct {
 	Players players.Players
