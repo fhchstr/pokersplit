@@ -2,79 +2,103 @@
 <html>
 <head>
 <title>PokerSplit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
+
 <body>
-<div class="container-fluid" style="padding: 2%">
+  <div class="container-fluid fs-5" style="padding: 2%">
 
-<h1 style="margin-bottom: 20px">Cash Game PokerSplit</h1>
+    <h1 style="margin-bottom: 20px">Cash Game PokerSplit</h1>
 
-{{if .Error}}
-<div class="alert alert-danger">
-  <strong>Error:</strong> {{.Error}}
-</div>
-{{end}}
+    {{if .Error}}
+    <div class="alert alert-danger">
+      <strong>Error:</strong> {{.Error}}
+    </div>
+    {{end}}
 
-<p>
-Register the players' name and buy-in. Buy-ins can be updated when players recave. <br/>
-At the end of the game, record each player's stack.<br/>
-Once the sum of all buy-ins matches the sum of all stacks, PokerSplit will display who owns how much to whom.
-</p>
-<p>
-<a href="https://github.com/fhchstr/pokersplit">Source Code</a>
-</p>
+    <div>
+    <p>
+      PokerSplit is made for casual cash games between friends. <br/>
+      It lets you enjoy your game without worrying how to split the money among the winners at the end of the game.
+    </p>
 
-<form method="post" action="/">
-<table class="table">
-<tr>
-<th scope="col">Player</th>
-<th scope="col">Buy-In</th>
-<th scope="col">Stack</th>
-</tr>
-{{if .Players}}
-{{range $i, $p := Sorted .Players}}
-<tr>
-<td><input id="player{{$i}}" name="player{{$i}}" type="text"   value="{{$p.Name}}"  readonly>
-<td><input id="buyin{{$i}}"  name="buyin{{$i}}"  type="number" value="{{Cents $p.BuyIn}}" step="0.01"></td>
-<td><input id="stack{{$i}}"  name="stack{{$i}}"  type="number" value="{{Cents $p.Stack}}" step="0.01"></td>
-</tr>
-{{end}}
-<tr>
-<td><input id="player{{len .Players}}" name="player{{len .Players}}" type="text"></td>
-<td><input id="buyin{{len .Players}}"  name="buyin{{len .Players}}"  type="number" step="0.01"></td>
-<td><input id="stack{{len .Players}}"  name="stack{{len .Players}}"  type="number" step="0.01"></td>
-</tr>
-{{else}}
-{{range Iterate 7}}
-<tr>
-<td><input id="player{{.}}" name="player{{.}}" type="text"></td>
-<td><input id="buyin{{.}}"  name="buyin{{.}}"  type="number" step="0.01"></td>
-<td><input id="stack{{.}}"  name="stack{{.}}"  type="number" step="0.01"></td>
-</tr>
-{{end}}
-{{end}}
-<tr>
-<td><strong>Total</strong></td>
-<td><strong>{{Cents .Players.BuyIn}}</strong></td>
-<td><strong>{{Cents .Players.Stack}}</strong></td>
-</tr>
-</table>
-<button type="submit" class="btn btn-primary">Save</button>
-</form>
+    <p>
+      <strong>It's super simple!</strong>
+      <ol>
+        <li>Register the players' name and buy-in.</li>
+        <li>Update the buy-ins when players rebuy.</li>
+        <li>At the end of the game, record each player's stack.</li>
+        <li>PokerSplit will display who owes how much to whom once the sum of all buy-ins matches the sum of all stacks.</li>
+      </ol>
+    </p>
 
-<div style="margin-top: 50px">
-{{range $debtor, $debts := .Debts}}
-<div class="border rounded" style="margin-bottom: 10px; padding: 10px;">
-<h5>{{$debtor}} owes</h5>
-<table class="table table-striped">
-{{range $d := $debts}}
-<tr><td>{{Cents $d.Amount}} to {{$d.Creditor}}</td></tr>
-{{end}}
-</table>
-</div>
-{{end}}
-</div>
+    <p>
+      <a href="https://github.com/fhchstr/pokersplit">Source Code</a>
+    </p>
+    </div>
 
-</div>
+    <div>
+      <form method="post" action="/">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Player</th>
+                <th scope="col">Buy-In</th>
+                <th scope="col">Stack</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{if .Players}}
+              {{range $i, $p := Sorted .Players}}
+              <tr>
+                <td><input id="player{{$i}}" name="player{{$i}}" type="text"   value="{{$p.Name}}"  readonly class="form-control-plaintext"></td>
+                <td><input id="buyin{{$i}}"  name="buyin{{$i}}"  type="number" value="{{Cents $p.BuyIn}}" step="0.01"></td>
+                <td><input id="stack{{$i}}"  name="stack{{$i}}"  type="number" value="{{Cents $p.Stack}}" step="0.01"></td>
+              </tr>
+              {{end}}
+              <tr>
+                <td><input id="player{{len .Players}}" name="player{{len .Players}}" type="text"></td>
+                <td><input id="buyin{{len .Players}}"  name="buyin{{len .Players}}"  type="number" step="0.01"></td>
+                <td><input id="stack{{len .Players}}"  name="stack{{len .Players}}"  type="number" step="0.01"></td>
+              </tr>
+              {{else}}
+              {{range Iterate 7}}
+              <tr>
+                <td><input id="player{{.}}" name="player{{.}}" type="text"></td>
+                <td><input id="buyin{{.}}"  name="buyin{{.}}"  type="number" step="0.01"></td>
+                <td><input id="stack{{.}}"  name="stack{{.}}"  type="number" step="0.01"></td>
+              </tr>
+              {{end}}
+              {{end}}
+            </tbody>
+            <tfoot>
+              <tr class="table-secondary">
+                <td><strong>Total</strong></td>
+                <td><strong>{{Cents .Players.BuyIn}}</strong></td>
+                <td><strong>{{Cents .Players.Stack}}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </form>
+    </div>
+
+    <div style="margin-top: 50px">
+      {{range $debtor, $debts := .Debts}}
+      <div class="border rounded" style="margin-bottom: 10px; padding: 10px;">
+        <h5>{{$debtor}} owes</h5>
+        <table class="table table-striped">
+          {{range $d := $debts}}
+          <tr><td>{{Cents $d.Amount}} to {{$d.Creditor}}</td></tr>
+          {{end}}
+        </table>
+      </div>
+      {{end}}
+    </div>
+  </div>
 </body>
 </html>
